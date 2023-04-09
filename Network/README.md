@@ -1,8 +1,180 @@
 # Network
 
+## ISO/OSI
+
+![ISO_ISO](./images/ISO_OSI.png)
+
 ## TCP/IP
 
 ![TCP_IP](./images/TCP_IP.png)
+
+## TCP/UDP
+
+TCP (Transmission Control Protocol) and UDP (User Datagram Protocol) are both protocols used for transmitting data over the internet. Here are the main differences between them:
+
+* Reliability: TCP is a reliable protocol that ensures that all data packets are delivered to the destination in the correct order. If any packet is lost or damaged during transmission, TCP retransmits it until it is successfully delivered. UDP, on the other hand, is an unreliable protocol that does not guarantee delivery of packets or their order.
+
+* Connection-oriented vs connectionless: TCP is a connection-oriented protocol, which means that a connection is established between the sender and receiver before any data is transmitted. UDP is a connectionless protocol, which means that data can be sent to any receiver without establishing a connection first.
+
+* Speed: UDP is faster than TCP because it does not perform the error-checking and retransmission of lost packets that TCP does. This makes it ideal for applications that require real-time data transmission, such as online gaming or streaming video.
+
+* Packet size: TCP has a larger packet size than UDP, which means that it is more suited for transmitting large amounts of data. UDP's smaller packet size makes it more efficient for sending small amounts of data.
+
+* Applications: TCP is commonly used for applications that require reliable data transmission, such as email, file transfer, and web browsing. UDP is commonly used for applications that require fast, real-time data transmission, such as online gaming, video conferencing, and voice-over-IP (VoIP).
+
+In summary, TCP is a reliable, connection-oriented protocol that is suited for transmitting large amounts of data, while UDP is a faster, connectionless protocol that is ideal for real-time applications that require speed over reliability.
+
+### A TCP Service in GO
+
+```golang
+package main
+
+import (
+    "fmt"
+    "net"
+)
+
+func main() {
+    fmt.Println("Starting TCP server...")
+    listener, err := net.Listen("tcp", ":12345") // Listening on port 12345
+    if err != nil {
+        fmt.Println("Error starting TCP server:", err)
+        return
+    }
+    defer listener.Close()
+
+    for {
+        conn, err := listener.Accept() // Wait for new connection
+        if err != nil {
+            fmt.Println("Error accepting new connection:", err)
+            continue
+        }
+        go handleConnection(conn) // Handle the new connection in a separate goroutine
+    }
+}
+
+func handleConnection(conn net.Conn) {
+    defer conn.Close()
+    fmt.Println("New connection from:", conn.RemoteAddr())
+    buf := make([]byte, 1024) // Create buffer for incoming data
+    for {
+        n, err := conn.Read(buf) // Read data from connection
+        if err != nil {
+            fmt.Println("Error reading data from connection:", err)
+            return
+        }
+        fmt.Println("Received data:", string(buf[:n])) // Print the received data
+    }
+}
+```
+
+### A UDP service in GO
+
+```golang
+package main
+
+import (
+    "fmt"
+    "net"
+)
+
+func main() {
+    fmt.Println("Starting UDP server...")
+    serverAddr, err := net.ResolveUDPAddr("udp", ":12345") // Listening on port 12345
+    if err != nil {
+        fmt.Println("Error resolving UDP address:", err)
+        return
+    }
+
+    conn, err := net.ListenUDP("udp", serverAddr) // Listen for incoming UDP packets
+    if err != nil {
+        fmt.Println("Error listening for UDP packets:", err)
+        return
+    }
+    defer conn.Close()
+
+    buf := make([]byte, 1024) // Create buffer for incoming data
+    for {
+        n, addr, err := conn.ReadFromUDP(buf) // Read data from UDP packet
+        if err != nil {
+            fmt.Println("Error reading data from UDP packet:", err)
+            continue
+        }
+        fmt.Println("Received data from", addr.String(), ":", string(buf[:n])) // Print the received data and client address
+        // Process and respond to the received data here
+    }
+}
+```
+
+### Telnet
+
+Telnet is a protocol used to connect to a remote computer or server using the command line interface. Here's how you can use Telnet:
+
+```shell
+telnet <hostname or IP address> <port>
+```
+
+If the Telnet session is successful, you will be prompted to enter a login name and password to access the remote computer or server.
+
+Once you're logged in, you can use Telnet to run commands and interact with the remote computer or server as if you were physically connected to it.
+
+To exit the Telnet session, type the following command:
+
+```shell
+exit
+```
+
+Note that Telnet is an unencrypted protocol and is not secure for transmitting sensitive information. If you need to transmit sensitive information, it's recommended to use a more secure protocol, such as SSH (Secure Shell).
+
+### netcat
+
+The nc (or netcat) command is a versatile networking tool that allows you to establish TCP/UDP connections, send and receive data over a network, and perform other network-related tasks. Here are some common use cases for the nc command:
+
+* Establish a TCP connection:
+
+```shell
+nc <hostname or IP address> <port>
+```
+
+This will establish a TCP connection to the specified hostname or IP address on the specified port. You can then type commands or send data to the remote server.
+
+* Send a file over a network:
+
+```shell
+nc <hostname or IP address> <port> < file
+```
+
+This will send the contents of a local file to the remote server over the specified port.
+
+* Receive a file over a network:
+
+```shell
+nc -l <port> > file
+```
+
+This will listen on the specified port and save any incoming data to a local file.
+
+* Port scanning:
+
+```shell
+nc -zv <hostname or IP address> <start port>-<end port>
+```
+
+This will scan the specified range of ports on the remote server and report which ports are open.
+
+* Chat over a network:
+
+```shell
+nc -l <port>
+```
+
+On one terminal, run the above command to listen on the specified port. On another terminal, run the following command:
+
+```shell
+nc <hostname or IP address> <port>
+```
+
+This will establish a connection to the server, allowing you to send messages back and forth like a chat room.
 
 ## Ubuntu 22 static IP
 
