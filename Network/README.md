@@ -176,6 +176,30 @@ nc <hostname or IP address> <port>
 
 This will establish a connection to the server, allowing you to send messages back and forth like a chat room.
 
+### TCPdump
+
+Tcpdump is a command-line tool used for analyzing and troubleshooting network traffic. It is available on most Linux distributions and can be used to capture and display network traffic in real-time.
+
+Here are some basic steps to use tcpdump on Linux:
+
+* You can filter the captured traffic by specifying a BPF (Berkeley Packet Filter) expression. For example, to capture only HTTP traffic, you would use:
+
+```shell
+sudo tcpdump -i eth0 port 80
+```
+
+* You can save the captured traffic to a file for later analysis using the -w option. For example, to save the captured traffic to a file named capture.pcap, you would use:
+
+```shell
+sudo tcpdump -i eth0 -w capture.pcap
+```
+
+* You can analyze the captured traffic using a tool like Wireshark. To open the capture file in Wireshark, type the following command:
+
+```
+wireshark capture.pcap
+```
+
 ## Ubuntu 22 static IP
 
 ```shell
